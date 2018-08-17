@@ -35,10 +35,10 @@ cbs_download_data <- function( id, path=file.path(id, "data.csv"), ...
   url <- URLencode(url)
   res <- get_json(url, verbose = verbose) #jsonlite::fromJSON(url)
   write.table( res$value, 
-               file=data_file, 
-               row.names=FALSE, 
-               na="",
-               sep=","
+               file      = data_file, 
+               row.names = FALSE, 
+               na        = "",
+               sep       = ","
              )
   url <- res$odata.nextLink
 
