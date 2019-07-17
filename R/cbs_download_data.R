@@ -31,6 +31,7 @@ cbs_download_data <- function( id
   dir.create(dirname(path), showWarnings = FALSE, recursive = TRUE)
   data_file <- file(path, open = "wt")  
   
+  pb <- progress_start(size = query_size(id, ...))
   # retrieve data
   if (verbose){
     message("Retrieving data from table '", id ,"'")
@@ -43,6 +44,7 @@ cbs_download_data <- function( id
                na="",
                sep=","
              )
+  progress_update(pb, nrow(res$value))
   url <- res$odata.nextLink
 
   while(!is.null(url)){
@@ -65,15 +67,35 @@ cbs_download_data <- function( id
                , na        = ""
                , sep       = ","
                )
+    progress_update(pb, nrow(res$value))
     url <- res$odata.nextLink
     #break
   }
   close(data_file)
+  progress_end(pb)
   if (verbose){ message("Done!") }
 }
 
+progress_start <- function(size){
+  if (interactive()){
+    txtProgressBar(max = size)
+  }
+}
+
+progress_update <- function(pb, value){
+  if (interactive()){
+    value <- pb$getVal() +  value
+    pb$up(value)
+  }
+}
+
+progress_end <- function(pb){
+  if(interactive()){
+    close(pb)
+  }
+}
 #testing
-#download_data("81819NED")
+#cbs_download_data("81819NED")
 
 
 ## big table
